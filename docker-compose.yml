@@ -1,0 +1,48 @@
+version: '3.6'
+networks:
+    dbs-network:
+        name: dbs-network
+        driver: bridge
+
+services:
+    minio:
+        hostname: minio
+        image: minio/minio:${MINIO_VERSION}
+        networks:
+            - dbs-network
+        ports:
+            - ${MINIO_PORT}:9000
+        environment:
+            - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+            - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+        volumes:
+            - minio_data:/data
+        command: server /data
+    pgsql:
+        image: postgres:${POSTGRES_VERSION}
+        volumes:
+            - pgsql_data:/var/lib/postgresql/data
+        ports:
+            - ${POSTGRES_PORT}:5432
+        environment:
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        networks:
+            - dbs-network
+    redis:
+        image: bitnami/redis:${REDIS_VERSION}
+        ports:
+            - ${REDIS_PORT}:6379
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+        volumes:
+            - redis_data:/bitnami/redis/data
+        networks:
+            - dbs-network
+
+volumes:
+    redis_data:
+        driver: local
+    pgsql_data:
+        driver: local
+    minio_data:
+        driver: local
