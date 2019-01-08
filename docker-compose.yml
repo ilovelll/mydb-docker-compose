@@ -8,6 +8,7 @@ services:
     minio:
         hostname: minio
         image: minio/minio:${MINIO_VERSION}
+        restart: always
         networks:
             - dbs-network
         ports:
@@ -20,6 +21,7 @@ services:
         command: server /data
     pgsql:
         image: postgres:${POSTGRES_VERSION}
+        restart: always
         volumes:
             - pgsql_data:/var/lib/postgresql/data
         ports:
@@ -30,6 +32,7 @@ services:
             - dbs-network
     redis:
         image: bitnami/redis:${REDIS_VERSION}
+        restart: always
         ports:
             - ${REDIS_PORT}:6379
         environment:
