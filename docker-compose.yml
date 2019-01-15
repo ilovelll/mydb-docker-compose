@@ -6,6 +6,7 @@ networks:
 
 services:
     minio:
+        container_name: srv-minio
         hostname: minio
         image: minio/minio:${MINIO_VERSION}
         restart: always
@@ -17,13 +18,14 @@ services:
             - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
             - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
         volumes:
-            - minio_data:/data
+            - ./data/minio-data:/data
         command: server /data
     pgsql:
+        container_name: srv-pgsql
         image: postgres:${POSTGRES_VERSION}
         restart: always
         volumes:
-            - pgsql_data:/var/lib/postgresql/data
+            - ./data/pgsql-data:/var/lib/postgresql/data
         ports:
             - ${POSTGRES_PORT}:5432
         environment:
@@ -31,6 +33,7 @@ services:
         networks:
             - dbs-network
     redis:
+        container_name: srv-redis
         image: bitnami/redis:${REDIS_VERSION}
         restart: always
         ports:
@@ -38,14 +41,7 @@ services:
         environment:
             - REDIS_PASSWORD=${REDIS_PASSWORD}
         volumes:
-            - redis_data:/bitnami/redis/data
+            - ./data/redis-data:/bitnami/redis/data
         networks:
             - dbs-network
 
-volumes:
-    redis_data:
-        driver: local
-    pgsql_data:
-        driver: local
-    minio_data:
-        driver: local
